@@ -1,7 +1,7 @@
 import { Viewport } from './viewport.js';
 import { User } from './user.js';
 import { Tileset } from './tileset.js';
-
+import { ShortcutManager } from './shortcut-manager.js';
 export class GameClient {
 	constructor(serverEndpointURI, parentEl) {
 		this._serverEndpointURI = serverEndpointURI;
@@ -10,6 +10,8 @@ export class GameClient {
 		this._tilesets = {
 			1: new Tileset(1, 10, 10, 40, 20, '/img/tilesets/tileset1.png')
 		};
+
+		this._shortcutManager = new ShortcutManager();
 
 		this._users = {};
 		this._thisUser = null;
@@ -53,6 +55,46 @@ export class GameClient {
 
 	_bindEvents() {
 		// Set up key bindings for movement, changing name, chat.
+		
+		/* Define the global shortcuts. */
+		// FRP.Shortcut.registerURLs({
+		// 	's97'  : '/pages/attack.php',
+		// 	'109'  : '/pages/mail.php',
+		// 	'110'  : '/pages/mail_compose.php',
+		// 	//'104'  : '/pages/home.php',
+		// 	'113'  : '/pages/world.php',
+		// 	's113' : '/pages/place_list.php',
+		// 	'93'   : '/pages/skill_manage.php',
+		// 	'98'   : '/pages/bank.php',
+		// 	'105'  : '/pages/backpack.php',
+		// 	's63'  : '/pages/wiki_page.php',
+		// 	'112'  : '/pages/player.php',
+		// 	'102'  : '/pages/board.php',
+		// 	'114'  : '/pages/raid.php',
+		// 	'103'  : '/pages/guild.php',
+		// 	's104' : '/pages/player_hitlist.php'
+		// });
+		// FRP.Shortcut.register('s99', function() {
+		// 	window.open('/pages/chat_main.php', 'FutureRP_Chatroom',
+		// 			'width=830,height=500,resizable=yes,scrollbars=no,toolbar=no,' +
+		// 			'location=no,directory=no,status=no,menubar=no');
+		// });
+		this._shortcutManager.register('104', () => {
+			console.log('H PRESSED');
+		});
+	
+		this._shortcutManager.register('119', () => {
+			this.moveThisUser(0, -1); // North
+		});
+		this._shortcutManager.register('115', () => {
+			this.moveThisUser(0, 1); // South
+		});
+		this._shortcutManager.register('100', () => {
+			this.moveThisUser(1, 0); // East
+		});
+		this._shortcutManager.register('97', () => {
+			this.moveThisUser(-1, 0); // West
+		});
 	}
 
 	_onWSOpen(evt) {
@@ -107,7 +149,7 @@ export class GameClient {
 		this._users[id] = User.create(id, name, x, y);
 
 		// Consider the first user we're told about to be "us"...?
-		if (this._thisUser) {
+		if (!this._thisUser) {
 			this._thisUser = this._users[id];
 		}
 
@@ -165,5 +207,12 @@ export class GameClient {
 				};
 			}
 		}
+	}
+
+	moveThisUser(dx, dy) {
+		const user = this._thisUser;
+		const pos = user.getPos();
+		console.log("x", pos.x, "y", pos.y, "dx", dx, "dy", dy, 'fx', dx + pos.x, 'fy', dy + pos.y);
+		this._sendMessage('USER_MOVE', { x: dx + pos.x, y: dy + pos.y });
 	}
 }

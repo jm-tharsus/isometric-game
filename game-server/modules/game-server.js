@@ -15,7 +15,7 @@ class GameServer {
 
 		this._setupWebSocketServer();
 
-		this._randomlyMovePlayers();
+		// this._randomlyMovePlayers();
 	}
 
 	static create(port) {
@@ -42,14 +42,20 @@ class GameServer {
 		// }
 		this._notifyAllUsers(this._makeUserJoinMessage(user));
 
-		ws.on('message', function incoming(message) {
-			console.log('received: %s', message);
-			// ws.send('something:' + message);
-		});
+		ws.on('message', message => this._handleMessage(user, JSON.parse(message)));
 
 		// [ ] Notify everyone when a new user joins
 		// [ ] Notify everyone when they leave
 		// [ ] Notify when they move
+	}
+
+	_handleMessage(user, msg) {
+		const { type, data } = msg;
+
+		switch (type) {
+		case 'USER_MOVE':
+			return this.movePlayer(user.getId(), data.x, data.y);
+		}
 	}
 
 	_createNewUser(ws) {
@@ -116,6 +122,8 @@ class GameServer {
 	}
 
 	movePlayer(id, x, y) {
+		x = Math.max(0, Math.min(x, this._mapInfo.width - 1));
+		y = Math.max(0, Math.min(y, this._mapInfo.height - 1));
 		const user = this.getUserById(id);
 		user.setPos(x, y);
 		this._notifyAllUsers(this._makeUserMoveMessage(user));
@@ -129,8 +137,8 @@ class GameServer {
 				x += Math.random() > 0.5 ? 1 : -1;
 				y += Math.random() > 0.5 ? 1 : -1;
 
-				x = Math.max(0, Math.min(x, this._mapInfo.width - 1));
-				y = Math.max(0, Math.min(y, this._mapInfo.height - 1));
+				// x = Math.max(0, Math.min(x, this._mapInfo.width - 1));
+				// y = Math.max(0, Math.min(y, this._mapInfo.height - 1));
 
 				this.movePlayer(user.getId(), x, y);
 
