@@ -2,6 +2,7 @@ class User {
 	constructor(id, ws) {
 		this._id = id;
 		this._ws = ws;
+		this._pos = { x: 0, y: 0 }; // TODO: Needs to be set properly.
 		this._name = 'Random Name ' + Math.floor(Date.now() / 10000);
 	}
 
@@ -18,7 +19,6 @@ class User {
 	}
 
 	setPos(x, y) {
-		// TODO: This needs a nice transition/walking animation. Perhaps setPosAnim().
 		this._pos.x = x;
 		this._pos.y = y;
 	}

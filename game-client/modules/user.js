@@ -1,8 +1,11 @@
+const CHAT_BUBBLE_DURATION = 3000;
 export class User {
 	constructor(id, name, x, y) {
 		this._id = id;
 		this._name = name;
 		this._pos = { x, y };
+		this._chatBubbleText = '';
+		this._chatBubbleTime = -1;
 	}
 
 	static create(id, name, x, y) {
@@ -27,8 +30,16 @@ export class User {
 		this._pos.y = y;
 	}
 
-	// XXX: Not sure if this should really live here..
-	updateDisplay(ctx) {
+	setChatBubble(text) {
+		this._chatBubbleText = text;
+		this._chatBubbleTime = Date.now();
+	}
 
+	getChatBubbleText() {
+		if (this._chatBubbleTime > Date.now() - CHAT_BUBBLE_DURATION) {
+			return this._chatBubbleText;
+		} else {
+			return null;
+		}
 	}
 }

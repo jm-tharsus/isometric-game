@@ -5,15 +5,17 @@ const { User } = require('./user');
 
 class GameServer {
 	constructor(port) {
-		this._connections = [];
 		this._users = {};
 		this._nextUserId = 1;
 		this._port = port;
+		this._mapInfo = { id: 1, width: 40, height: 40 };
 
 		this._handleNewConnection = this._handleNewConnection.bind(this);
 		this._createNewUser = this._createNewUser.bind(this);
 
 		this._setupWebSocketServer();
+
+		this._randomlyMovePlayers();
 	}
 
 	static create(port) {
@@ -34,10 +36,11 @@ class GameServer {
 		this._sendFullStateToUser(user);
 
 		// Notify existing users of this one.
-		const joinMsg = this._makeUserJoinMessage(user);
-		for (const otherUser of Object.values(this._users)) {
-			otherUser.sendMessage(joinMsg.type, joinMsg.data);
-		}
+		// const joinMsg = this._makeUserJoinMessage(user);
+		// for (const otherUser of Object.values(this._users)) {
+		// 	otherUser.sendMessage(joinMsg.type, joinMsg.data);
+		// }
+		this._notifyAllUsers(this._makeUserJoinMessage(user));
 
 		ws.on('message', function incoming(message) {
 			console.log('received: %s', message);
@@ -56,16 +59,20 @@ class GameServer {
 	}
 
 	_sendFullStateToUser(user) {
-		// Tell the user about the map (just a dummy entry for now.)
-		user.sendMessage('LOAD_MAP', {
-			id: 1,
-			width: 40,
-			height: 40
-		});
+		// Tell the user about the map (just a dummy entry for now).
+		const { id, width, height } = this._mapInfo;
+		user.sendMessage('LOAD_MAP', { id, width, height });
 
+		// Tell the user about the other users.
 		for (const otherUser of Object.values(this._users)) {
 			const { type, data } = this._makeUserJoinMessage(otherUser);
 			user.sendMessage(type, data);
+		}
+	}
+
+	_notifyAllUsers(msg) {
+		for (const user of Object.values(this._users)) {
+			user.sendMessage(msg.type, msg.data);
 		}
 	}
 
@@ -80,6 +87,59 @@ class GameServer {
 				y: pos.y
 			}
 		};
+	}
+
+	_makeUserMoveMessage(user) {
+		const pos = user.getPos();
+		return {
+			type: 'USER_MOVE',
+			data: {
+				id: user.getId(),
+				x: pos.x,
+				y: pos.y
+			}
+		};
+	}
+
+	_makeUserChatMessage(user, text) {
+		return {
+			type: 'USER_CHAT',
+			data: {
+				id: user.getId(),
+				text
+			}
+		};
+	}
+
+	getUserById(id) {
+		return this._users[id] || null;
+	}
+
+	movePlayer(id, x, y) {
+		const user = this.getUserById(id);
+		user.setPos(x, y);
+		this._notifyAllUsers(this._makeUserMoveMessage(user));
+	}
+
+	_randomlyMovePlayers() {
+		setInterval(() => {
+			for (const user of Object.values(this._users)) {
+				const pos = user.getPos();
+				let x = pos.x, y = pos.y;
+				x += Math.random() > 0.5 ? 1 : -1;
+				y += Math.random() > 0.5 ? 1 : -1;
+
+				x = Math.max(0, Math.min(x, this._mapInfo.width - 1));
+				y = Math.max(0, Math.min(y, this._mapInfo.height - 1));
+
+				this.movePlayer(user.getId(), x, y);
+
+				// Occasionally spam the chat.
+				if (Math.random() > 0.8) {
+					this._notifyAllUsers(this._makeUserChatMessage(user, 'Hello there!'));
+				}
+			}
+		}, 2000);
 	}
 }
 
