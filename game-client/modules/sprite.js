@@ -1,4 +1,4 @@
-export class Tileset {
+export class Sprite {
 	constructor(id, width, height, tileWidth, tileHeight, imageUrl) {
 		this._id = id;
 		this._width = width;
@@ -20,7 +20,7 @@ export class Tileset {
 
 		return {
 			x: x * this._tileWidth,
-			y: y * (this._tileHeight * 2),
+			y: y * this._tileHeight,
 			w: this._tileWidth,
 			h: this._tileHeight
 		};

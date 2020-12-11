@@ -64,7 +64,7 @@ export class Viewport {
 				// 	TILE_WIDTH, TILE_HEIGHT);
 
 				const seededRand = this._mulberry32(x * y);
-				this._drawTile(1, this._rand(4, 6, seededRand), x, y);
+				this._drawTile(1, this._rand(1, 10, seededRand) > 6 ? this._rand(4, 10, seededRand) : this._rand(4, 5, seededRand), x, y);
 				// this._drawTile(1, Math.random() > 0.8 ? this._rand(5, 13) : 4, x, y);
 
 				// Draw the users.
@@ -74,7 +74,15 @@ export class Viewport {
 
 		for (let x = 0; x < mapInfo.width; x++) {
 			for (let y = 0; y < mapInfo.height; y++) {
-				coordCache[x][y].users.forEach(u => this._drawUserChatBubble(u));
+				coordCache[x][y].users.forEach(u => {
+					// Draw names...
+					// const coords = this._toScreenCoords(x, y);
+					// this._ctx.font = '16px monospace';
+					// this._ctx.fillStyle = 'black';
+					// this._ctx.fillText(u.getName(), coords.x - 40, coords.y - 25);
+
+					this._drawUserChatBubble(u);
+				});
 			}
 		}
 	}
@@ -97,7 +105,7 @@ export class Viewport {
 	_toScreenCoords(x, y) {
 		const origin = {
 			x: this._canvasEl.width / 2,
-			y: this._canvasEl.height / 2
+			y: 0 //this._canvasEl.height / 2
 		};
 
 		return {
@@ -105,6 +113,19 @@ export class Viewport {
 			y: (origin.y) + (x + y) * (TILE_HEIGHT / 2),
 		};
 	}
+
+	// _toCameraCoords(x, y) {
+	// 	const user = this._gameClient._thisUser;
+	// 	const userPos = user ? user.getPos() : { x: 0, y: 0 };
+
+	// 	const userPosScreen = this._toScreenCoords(userPos.x, userPos.y);
+	// 	const screenCoords = this._toScreenCoords(x, y);
+
+	// 	return {
+	// 		x: screenCoords.x - userPosScreen.x,
+	// 		y: screenCoords.y - userPosScreen.y
+	// 	};
+	// }
 
 	_drawTile(tilesetId, tileIndex, x, y) {
 		const tileset = this._gameClient._tilesets[tilesetId];
@@ -129,10 +150,21 @@ export class Viewport {
 
 		const coords = this._toScreenCoords(x, y);
 
-		this._ctx.fillStyle = 'rgba(0,0,0,0.5)';
-		this._ctx.fillRect(
-			coords.x + 10, coords.y - TILE_HEIGHT,
-			TILE_WIDTH - 20, TILE_HEIGHT * 2);
+		// this._ctx.fillStyle = 'rgba(0,0,0,0.5)';
+		// this._ctx.fillRect(
+		// 	coords.x + 10, coords.y - TILE_HEIGHT,
+		// 	TILE_WIDTH - 20, TILE_HEIGHT * 2);
+
+		const spritesheet = this._gameClient._sprites[1];
+		const image = spritesheet.getImage();
+		const rect = spritesheet.getTileRect(user.getId() % 2 === 0 ? 0 : 5);
+
+		this._ctx.drawImage(image,
+			rect.x, rect.y,
+			rect.w, rect.h,
+
+			coords.x + 12, coords.y - 25,
+			rect.w, rect.h);
 	}
 
 	_drawUserChatBubble(user) {

@@ -2,13 +2,17 @@ import { Viewport } from './viewport.js';
 import { User } from './user.js';
 import { Tileset } from './tileset.js';
 import { ShortcutManager } from './shortcut-manager.js';
+import { Sprite } from './sprite.js';
 export class GameClient {
 	constructor(serverEndpointURI, parentEl) {
 		this._serverEndpointURI = serverEndpointURI;
 		this._parentEl = parentEl;
 
 		this._tilesets = {
-			1: new Tileset(1, 10, 10, 40, 20, '/img/tilesets/tileset1.png')
+			1: new Tileset(1, 10, 10, 40, 20, '/img/tilesets/tileset1.png'),
+		};
+		this._sprites = {
+			1: new Sprite(1, 5, 2, 19, 39, '/img/farmers.png')
 		};
 
 		this._shortcutManager = new ShortcutManager();

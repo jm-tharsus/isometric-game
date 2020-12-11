@@ -15,7 +15,7 @@ class GameServer {
 
 		this._setupWebSocketServer();
 
-		// this._randomlyMovePlayers();
+		this._randomlyMovePlayers();
 	}
 
 	static create(port) {
