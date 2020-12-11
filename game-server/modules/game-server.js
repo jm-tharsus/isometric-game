@@ -11,11 +11,12 @@ class GameServer {
 		this._mapInfo = { id: 1, width: 40, height: 40 };
 
 		this._handleNewConnection = this._handleNewConnection.bind(this);
+		this._handleDisconnection = this._handleDisconnection.bind(this);
 		this._createNewUser = this._createNewUser.bind(this);
 
 		this._setupWebSocketServer();
 
-		this._randomlyMovePlayers();
+		// this._randomlyMovePlayers();
 	}
 
 	static create(port) {
@@ -39,6 +40,12 @@ class GameServer {
 		this._notifyAllUsers(this._makeUserJoinMessage(user));
 
 		ws.on('message', message => this._handleMessage(user, JSON.parse(message)));
+		ws.on('close', (code, reason) => this._handleDisconnection(user, code, reason));
+	}
+
+	_handleDisconnection(user, code, reason) {
+		delete this._users[user.getId()];
+		console.log(`User #${user.getId()} disconnected: ${code} - ${reason}`);
 	}
 
 	_handleMessage(user, msg) {

@@ -50,7 +50,6 @@ export class Viewport {
 			for (let y = 0; y < mapInfo.height; y++) {
 				const seededRand = this._mulberry32(x * y);
 				this._drawTile(1, this._rand(1, 10, seededRand) > 6 ? this._rand(4, 10, seededRand) : this._rand(4, 5, seededRand), x, y);
-				// this._drawTile(1, Math.random() > 0.8 ? this._rand(5, 13) : 4, x, y);
 
 				// Draw the users.
 				coordCache[x][y].users.forEach(u => this._drawUser(u));
