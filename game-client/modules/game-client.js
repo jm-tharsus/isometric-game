@@ -1,10 +1,15 @@
 import { Viewport } from './viewport.js';
 import { User } from './user.js';
+import { Tileset } from './tileset.js';
 
 export class GameClient {
 	constructor(serverEndpointURI, parentEl) {
 		this._serverEndpointURI = serverEndpointURI;
 		this._parentEl = parentEl;
+
+		this._tilesets = {
+			1: new Tileset(1, 10, 10, 40, 20, '/img/tilesets/tileset1.png')
+		};
 
 		this._users = {};
 		this._thisUser = null;
@@ -43,7 +48,7 @@ export class GameClient {
 	}
 
 	_createViewport() {
-		this._viewport = new Viewport(this, 600, 300);
+		this._viewport = new Viewport(this, 800, 600);
 	}
 
 	_bindEvents() {

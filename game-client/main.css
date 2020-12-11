@@ -3,6 +3,16 @@ body {
 	color: white;
 }
 
-#isometric-game-container {
+#game-client-container {
+	margin: 50px auto 30px auto;
+	width: 800px;
+	box-shadow: 0 0 20px black;
+}
+
+.isometric-game-container {
 	background-color: #141414;
+}
+
+.isometric-game-container canvas {
+	display: block;
 }
