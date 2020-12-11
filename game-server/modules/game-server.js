@@ -46,6 +46,9 @@ class GameServer {
 	_handleDisconnection(user, code, reason) {
 		delete this._users[user.getId()];
 		console.log(`User #${user.getId()} disconnected: ${code} - ${reason}`);
+
+		// Notify existing users of this one.
+		this._notifyAllUsers(this._makeUserLeaveMessage(user));
 	}
 
 	_handleMessage(user, msg) {
@@ -90,6 +93,18 @@ class GameServer {
 			data: {
 				id: user.getId(),
 				name: user.getName(),
+				x: pos.x,
+				y: pos.y
+			}
+		};
+	}
+
+	_makeUserLeaveMessage(user) {
+		const pos = user.getPos();
+		return {
+			type: 'USER_LEAVE',
+			data: {
+				id: user.getId(),
 				x: pos.x,
 				y: pos.y
 			}
