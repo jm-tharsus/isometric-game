@@ -58,36 +58,9 @@ export class GameClient {
 	}
 
 	_bindEvents() {
-		// Set up key bindings for movement, changing name, chat.
-		
-		/* Define the global shortcuts. */
-		// FRP.Shortcut.registerURLs({
-		// 	's97'  : '/pages/attack.php',
-		// 	'109'  : '/pages/mail.php',
-		// 	'110'  : '/pages/mail_compose.php',
-		// 	//'104'  : '/pages/home.php',
-		// 	'113'  : '/pages/world.php',
-		// 	's113' : '/pages/place_list.php',
-		// 	'93'   : '/pages/skill_manage.php',
-		// 	'98'   : '/pages/bank.php',
-		// 	'105'  : '/pages/backpack.php',
-		// 	's63'  : '/pages/wiki_page.php',
-		// 	'112'  : '/pages/player.php',
-		// 	'102'  : '/pages/board.php',
-		// 	'114'  : '/pages/raid.php',
-		// 	'103'  : '/pages/guild.php',
-		// 	's104' : '/pages/player_hitlist.php'
-		// });
-		// FRP.Shortcut.register('s99', function() {
-		// 	window.open('/pages/chat_main.php', 'FutureRP_Chatroom',
-		// 			'width=830,height=500,resizable=yes,scrollbars=no,toolbar=no,' +
-		// 			'location=no,directory=no,status=no,menubar=no');
-		// });
 		this._shortcutManager.register('104', () => {
-			console.log('H PRESSED');
 			this.sendChatMessage('Hello there!');
 		});
-	
 		this._shortcutManager.register('119', () => {
 			this.moveThisUser(0, -1); // North
 		});

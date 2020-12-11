@@ -43,26 +43,11 @@ export class Viewport {
 	}
 
 	_drawMap() {
-		// [ ] Draw the tile at 0, 0
-		// [ ] Draw the users at that tile.
-		// [ ] ... draw next tile, etc.
-
-		// Need to be able to identify users by their coordinates, for rapid
-		// painting, but only have them keyed by their respective ids atm...
-
 		const mapInfo = this._gameClient._mapInfo;
 		const coordCache = this._gameClient._coordCache;
 
 		for (let x = 0; x < mapInfo.width; x++) {
 			for (let y = 0; y < mapInfo.height; y++) {
-				// const coords = this._toScreenCoords(x, y);
-
-				// Draw the tile.
-				// this._ctx.strokeStyle = 'yellow';
-				// this._ctx.strokeRect(
-				// 	coords.x, coords.y,
-				// 	TILE_WIDTH, TILE_HEIGHT);
-
 				const seededRand = this._mulberry32(x * y);
 				this._drawTile(1, this._rand(1, 10, seededRand) > 6 ? this._rand(4, 10, seededRand) : this._rand(4, 5, seededRand), x, y);
 				// this._drawTile(1, Math.random() > 0.8 ? this._rand(5, 13) : 4, x, y);

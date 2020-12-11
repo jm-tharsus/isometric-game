@@ -36,17 +36,9 @@ class GameServer {
 		this._sendFullStateToUser(user);
 
 		// Notify existing users of this one.
-		// const joinMsg = this._makeUserJoinMessage(user);
-		// for (const otherUser of Object.values(this._users)) {
-		// 	otherUser.sendMessage(joinMsg.type, joinMsg.data);
-		// }
 		this._notifyAllUsers(this._makeUserJoinMessage(user));
 
 		ws.on('message', message => this._handleMessage(user, JSON.parse(message)));
-
-		// [ ] Notify everyone when a new user joins
-		// [ ] Notify everyone when they leave
-		// [ ] Notify when they move
 	}
 
 	_handleMessage(user, msg) {
@@ -143,17 +135,14 @@ class GameServer {
 				x += Math.random() > 0.5 ? 1 : -1;
 				y += Math.random() > 0.5 ? 1 : -1;
 
-				// x = Math.max(0, Math.min(x, this._mapInfo.width - 1));
-				// y = Math.max(0, Math.min(y, this._mapInfo.height - 1));
-
 				this.movePlayer(user.getId(), x, y);
 
 				// Occasionally spam the chat.
-				if (Math.random() > 0.8) {
+				if (Math.random() > 0.9) {
 					this._notifyAllUsers(this._makeUserChatMessage(user, 'Hello there!'));
 				}
 			}
-		}, 2000);
+		}, 1000);
 	}
 }
 
