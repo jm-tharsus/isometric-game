@@ -4,7 +4,7 @@ const TILE_HEIGHT = 20;
 export class Viewport {
 	constructor(gameClient, width, height) {
 		this._viewportSize = { width, height };
-		
+
 		// Store a reference to the game client.
 		this._gameClient = gameClient;
 
@@ -62,8 +62,10 @@ export class Viewport {
 				// this._ctx.strokeRect(
 				// 	coords.x, coords.y,
 				// 	TILE_WIDTH, TILE_HEIGHT);
-				
-				this._drawTile(1, Math.random() > 0.8 ? this._rand(5, 13) : 4, x, y);
+
+				const seededRand = this._mulberry32(x * y);
+				this._drawTile(1, this._rand(4, 6, seededRand), x, y);
+				// this._drawTile(1, Math.random() > 0.8 ? this._rand(5, 13) : 4, x, y);
 
 				// Draw the users.
 				coordCache[x][y].users.forEach(u => this._drawUser(u));
@@ -77,10 +79,19 @@ export class Viewport {
 		}
 	}
 
-	_rand(min, max) {
+	_mulberry32(a) {
+		return function () {
+			var t = a += 0x6D2B79F5;
+			t = Math.imul(t ^ t >>> 15, t | 1);
+			t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+			return ((t ^ t >>> 14) >>> 0) / 4294967296;
+		};
+	}
+
+	_rand(min, max, randFunc) {
 		min = Math.ceil(min);
 		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min) + min);
+		return Math.floor(randFunc() * (max - min) + min);
 	}
 
 	_toScreenCoords(x, y) {
@@ -105,7 +116,7 @@ export class Viewport {
 		this._ctx.drawImage(image,
 			rect.x, rect.y,
 			rect.w, rect.h,
-			
+
 			coords.x, coords.y,
 			rect.w, rect.h);
 	}

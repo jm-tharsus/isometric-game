@@ -81,6 +81,7 @@ export class GameClient {
 		// });
 		this._shortcutManager.register('104', () => {
 			console.log('H PRESSED');
+			this.sendChatMessage('Hello there!');
 		});
 	
 		this._shortcutManager.register('119', () => {
@@ -171,7 +172,7 @@ export class GameClient {
 			console.warn('User move for unknown user: ' + id);
 			return;
 		}
-		
+
 		user.setPos(x, y);
 		console.log(`User moved: ${user.getName()} (${id}) @ [${x}, ${y}]`);
 
@@ -215,5 +216,11 @@ export class GameClient {
 		const pos = user.getPos();
 		user.setPos(dx + pos.x, dy + pos.y);
 		this._sendMessage('USER_MOVE', { x: dx + pos.x, y: dy + pos.y });
+	}
+	
+	sendChatMessage(text) {
+		const user = this._thisUser;
+		user.setChatBubble(text);
+		this._sendMessage('USER_CHAT', { text });
 	}
 }

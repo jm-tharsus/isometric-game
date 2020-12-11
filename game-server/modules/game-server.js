@@ -55,6 +55,8 @@ class GameServer {
 		switch (type) {
 		case 'USER_MOVE':
 			return this.movePlayer(user.getId(), data.x, data.y);
+		case 'USER_CHAT':
+			return this.sendChatAsUser(user, data.text);
 		}
 	}
 
@@ -127,6 +129,10 @@ class GameServer {
 		const user = this.getUserById(id);
 		user.setPos(x, y);
 		this._notifyAllUsers(this._makeUserMoveMessage(user));
+	}
+
+	sendChatAsUser(user, text) {
+		this._notifyAllUsers(this._makeUserChatMessage(user, text));
 	}
 
 	_randomlyMovePlayers() {
