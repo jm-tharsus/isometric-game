@@ -171,6 +171,7 @@ export class GameClient {
 			console.warn('User move for unknown user: ' + id);
 			return;
 		}
+		
 		user.setPos(x, y);
 		console.log(`User moved: ${user.getName()} (${id}) @ [${x}, ${y}]`);
 
@@ -212,7 +213,7 @@ export class GameClient {
 	moveThisUser(dx, dy) {
 		const user = this._thisUser;
 		const pos = user.getPos();
-		console.log("x", pos.x, "y", pos.y, "dx", dx, "dy", dy, 'fx', dx + pos.x, 'fy', dy + pos.y);
+		user.setPos(dx + pos.x, dy + pos.y);
 		this._sendMessage('USER_MOVE', { x: dx + pos.x, y: dy + pos.y });
 	}
 }
