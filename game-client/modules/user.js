@@ -1,8 +1,12 @@
-class User {
-	constructor(id, ws) {
+export class User {
+	constructor(id, name, x, y) {
 		this._id = id;
-		this._ws = ws;
-		this._name = 'Random Name ' + Math.floor(Date.now() / 10000);
+		this._name = name;
+		this._pos = { x, y };
+	}
+
+	static create(id, name, x, y) {
+		return new User(id, name, x, y);
 	}
 
 	getId() {
@@ -23,9 +27,8 @@ class User {
 		this._pos.y = y;
 	}
 
-	sendMessage(type, data) {
-		this._ws.send(JSON.stringify({ type, data }));
+	// XXX: Not sure if this should really live here..
+	updateDisplay(ctx) {
+
 	}
 }
-
-module.exports = { User };

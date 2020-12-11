@@ -1,4 +1,5 @@
 import { Viewport } from './viewport.js';
+import { User } from './user.js';
 
 export class GameClient {
 	constructor(serverEndpointURI, parentEl) {
@@ -8,6 +9,11 @@ export class GameClient {
 		this._bindEvents();
 		this._createViewport();
 		this._connect();
+
+		this._onWSOpen = this._onWSOpen.bind(this);
+		this._onWSClose = this._onWSClose.bind(this);
+		this._onWSMessage = this._onWSMessage.bind(this);
+		this._onWSError = this._onWSError.bind(this);
 	}
 
 	static create(serverEndpointURI, parentEl) {
@@ -35,58 +41,58 @@ export class GameClient {
 	_bindEvents() {
 		// Set up key bindings for movement, changing name, chat.
 	}
+
+	_onWSOpen(evt) {
+		console.log('Web Socket connection opened:', evt);
+	}
+
+	_onWSClose(evt) {
+		console.log('Web Socket connection closed:', evt);
+	}
+
+	_onWSMessage(evt) {
+		// Assume message payload is JSON string and attempt to parse, process.
+		this._handleMessage(JSON.parse(evt.data));
+	}
+
+	_onWSError(evt) {
+		console.warn('Web Socket error:', evt);
+	}
+
+	_handleMessage(msg) {
+		switch (msg.type) {
+		case 'USER_JOIN':
+			return this._handleUserJoin(msg.data);
+		case 'USER_LEAVE':
+			return this._handleUserLeave(msg.data);
+		case 'USER_MOVE':
+			return this._handleUserMove(msg.data);
+		default:
+			console.log('Unknown message:', msg);
+		}
+	}
+
+	_handleUserJoin(data) {
+		const { id, name, x, y } = data;
+		console.log(`User joined: ${name} (${id}) @ [${x}, ${y}]`);
+		this._users[id] = User.create(id, name, x, y);
+	}
+
+	_handleUserLeave(data) {
+		const { id, name, x, y } = data;
+		console.log(`User left: ${name} (${id}) @ [${x}, ${y}]`);
+		delete this._users[id];
+	}
+	
+	_handleUserMove(data) {
+		const { id, x, y } = data;
+		const user = this._users[id];
+		user.setPos(x, y);
+		console.log(`User moved: ${user.getName()} (${id}) @ [${x}, ${y}]`);
+		delete this._users[id];
+	}
+
+	_sendMessage(type, data) {
+		this._ws.send(JSON.stringify({ type, data }));
+	}
 }
-
-
-
-/////////////
-
-
-
-// var wsUri = "ws://localhost:8080/";
-// var output;
-
-// function init() {
-// 	output = document.getElementById("output");
-// 	testWebSocket();
-// }
-
-// function testWebSocket() {
-// 	websocket = new WebSocket(wsUri);
-// 	websocket.onopen = function (evt) { onOpen(evt) };
-// 	websocket.onclose = function (evt) { onClose(evt) };
-// 	websocket.onmessage = function (evt) { onMessage(evt) };
-// 	websocket.onerror = function (evt) { onError(evt) };
-// }
-
-// function onOpen(evt) {
-// 	writeToScreen("CONNECTED");
-// 	doSend("WebSocket rocks");
-// }
-
-// function onClose(evt) {
-// 	writeToScreen("DISCONNECTED");
-// }
-
-// function onMessage(evt) {
-// 	writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
-// 	// websocket.close();
-// }
-
-// function onError(evt) {
-// 	writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-// }
-
-// function doSend(message) {
-// 	writeToScreen("SENT: " + message);
-// 	websocket.send(message);
-// }
-
-// function writeToScreen(message) {
-// 	var pre = document.createElement("p");
-// 	pre.style.wordWrap = "break-word";
-// 	pre.innerHTML = message;
-// 	output.appendChild(pre);
-// }
-
-// window.addEventListener("load", init, false);

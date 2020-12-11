@@ -33,7 +33,15 @@ export class Viewport {
 		this._ctx.fillStyle = 'green';
 		this._ctx.fillRect(0, 0, this._canvasEl.width, this._canvasEl.height);
 
+		this._drawMap();
+
 		// Schedule another frame of animation.
 		window.requestAnimationFrame(this._updateDisplay);
+	}
+
+	_drawMap() {
+		// [ ] Draw the tile at 0, 0
+		// [ ] Draw the users at that tile.
+		// [ ] ... draw next tile, etc.
 	}
 }
