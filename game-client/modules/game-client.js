@@ -110,7 +110,7 @@ export class GameClient {
 	}
 
 	_handleLoadMap(data) {
-		const { id, width, height } = data;
+		const { id, width, height, userId } = data;
 		console.log(`Loading map: ${id} :: [${width}x${height}]`);
 
 		// XXX: Ideally this would be done with a map loader class, etc.
@@ -118,17 +118,27 @@ export class GameClient {
 		this._mapInfo.width = width;
 		this._mapInfo.height = height;
 
+		this._mapInfo.userId = userId;
+
 		this._regenerateCoordCache();
 	}
 
 	_handleUserJoin(data) {
 		const { id, name, x, y } = data;
+		
+		if (id in this._users) {
+			console.warn('Received join message for existing user: #' + id);
+			return;
+		}
+		
 		console.log(`User joined: ${name} (${id}) @ [${x}, ${y}]`);
 		this._users[id] = User.create(id, name, x, y);
 
 		// Consider the first user we're told about to be "us"...?
-		if (!this._thisUser) {
+		// TODO: Just have the server pass a flag to let us know explicitly.
+		if (!this._thisUser && id === this._mapInfo.userId) {
 			this._thisUser = this._users[id];
+			console.log('Setting user sprite to be #' + this._thisUser.getId());
 		}
 
 		this._regenerateCoordCache();
@@ -191,7 +201,8 @@ export class GameClient {
 	moveThisUser(dx, dy) {
 		const user = this._thisUser;
 		const pos = user.getPos();
-		user.setPos(dx + pos.x, dy + pos.y);
+		console.log('orig', pos.x, 'x',pos.y);
+		// user.setPos(dx + pos.x, dy + pos.y);
 		this._sendMessage('USER_MOVE', { x: dx + pos.x, y: dy + pos.y });
 	}
 	

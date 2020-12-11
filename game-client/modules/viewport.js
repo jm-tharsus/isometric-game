@@ -61,10 +61,10 @@ export class Viewport {
 			for (let y = 0; y < mapInfo.height; y++) {
 				coordCache[x][y].users.forEach(u => {
 					// Draw names...
-					// const coords = this._toScreenCoords(x, y);
-					// this._ctx.font = '16px monospace';
-					// this._ctx.fillStyle = 'black';
-					// this._ctx.fillText(u.getName(), coords.x - 40, coords.y - 25);
+					const coords = this._toCameraCoords(x, y);
+					this._ctx.font = '16px monospace';
+					this._ctx.fillStyle = 'black';
+					this._ctx.fillText(u.getName(), coords.x - 40, coords.y - 25);
 
 					this._drawUserChatBubble(u);
 				});
@@ -90,7 +90,7 @@ export class Viewport {
 	_toScreenCoords(x, y) {
 		const origin = {
 			x: this._canvasEl.width / 2,
-			y: 0 //this._canvasEl.height / 2
+			y: this._canvasEl.height / 2
 		};
 
 		return {
@@ -99,25 +99,18 @@ export class Viewport {
 		};
 	}
 
-	// _toCameraCoords(x, y) {
-	// 	const user = this._gameClient._thisUser;
-	// 	const userPos = user ? user.getPos() : { x: 0, y: 0 };
-
-	// 	const userPosScreen = this._toScreenCoords(userPos.x, userPos.y);
-	// 	const screenCoords = this._toScreenCoords(x, y);
-
-	// 	return {
-	// 		x: screenCoords.x - userPosScreen.x,
-	// 		y: screenCoords.y - userPosScreen.y
-	// 	};
-	// }
+	_toCameraCoords(x, y) {
+		const user = this._gameClient._thisUser;
+		const userPos = user ? user.getPos() : { x: 0, y: 0 };
+		return this._toScreenCoords(x - userPos.x, y - userPos.y);
+	}
 
 	_drawTile(tilesetId, tileIndex, x, y) {
 		const tileset = this._gameClient._tilesets[tilesetId];
 		const image = tileset.getImage();
 		const rect = tileset.getTileRect(tileIndex);
 
-		const coords = this._toScreenCoords(x, y);
+		const coords = this._toCameraCoords(x, y);
 
 		this._ctx.drawImage(image,
 			rect.x, rect.y,
@@ -133,7 +126,7 @@ export class Viewport {
 		// Draw chat bubble
 		const { x, y } = user.getPos();
 
-		const coords = this._toScreenCoords(x, y);
+		const coords = this._toCameraCoords(x, y);
 
 		// this._ctx.fillStyle = 'rgba(0,0,0,0.5)';
 		// this._ctx.fillRect(
@@ -155,7 +148,7 @@ export class Viewport {
 	_drawUserChatBubble(user) {
 		const { x, y } = user.getPos();
 
-		const coords = this._toScreenCoords(x, y);
+		const coords = this._toCameraCoords(x, y);
 
 		const chatBubbleText = user.getChatBubbleText();
 		if (chatBubbleText !== null) {

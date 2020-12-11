@@ -61,7 +61,7 @@ class GameServer {
 	_sendFullStateToUser(user) {
 		// Tell the user about the map (just a dummy entry for now).
 		const { id, width, height } = this._mapInfo;
-		user.sendMessage('LOAD_MAP', { id, width, height });
+		user.sendMessage('LOAD_MAP', { id, width, height, userId: user.getId() });
 
 		// Tell the user about the other users.
 		for (const otherUser of Object.values(this._users)) {

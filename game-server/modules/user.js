@@ -3,7 +3,7 @@ class User {
 		this._id = id;
 		this._ws = ws;
 		this._pos = { x: 0, y: 0 }; // TODO: Needs to be set properly.
-		this._name = 'Random Name ' + Math.floor(Date.now() / 10000);
+		this._name = 'User #' + id;
 	}
 
 	getId() {
