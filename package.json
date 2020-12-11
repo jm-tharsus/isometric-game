@@ -2,15 +2,18 @@
   "name": "isometric-game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node game-server/index.js",
+    "start-client": "http-server -p 8080 ./game-client"
   },
   "author": "",
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
     "ws": "^7.4.1"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.3"
   }
 }
